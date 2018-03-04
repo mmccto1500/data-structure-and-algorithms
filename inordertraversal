@@ -1,0 +1,47 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* inorderTraversal(struct TreeNode* root, int* returnSize) 
+{
+     int *result = NULL;
+if (root == NULL)
+    return result;
+result = (int *)malloc(sizeof(int));   //动态分配内存
+*result = root->val;
+
+int leftsize=0, rightsize=0, *leftarr, *rightarr;
+if (root->left)
+    leftarr = inorderTraversal(root->left, &leftsize);
+if (root->right)
+    rightarr = inorderTraversal(root->right, &rightsize);
+
+*returnSize = 1 + leftsize + rightsize;   //计算所需数组大小
+if (leftsize >0 || rightsize > 0)
+    result = (int *)realloc(result, sizeof(int)*(*returnSize));//重新给已经malloc的数组分配内存空间
+
+int i, j;
+for (i=0; i<leftsize; i++)
+    result[i] = leftarr[i];//修改成中序,"i+1" to "i"，此处为了配合树叶节点（无左右子树）的赋值，用左节点的数组第一项覆盖原已经赋值的result第一项
+if (leftsize > 0)
+    free(leftarr);
+if(*result&&(leftsize||rightsize))//此处需要用某具体节点的val值插入数组，顺序排在左节点数值之后，右节点之前。（判断处理解！）
+    {
+        result[i]=root->val;
+    }
+    
+for (j=0; j<rightsize; j++)
+    result[i+j+1] = rightarr[j];//修改成中序,"i+j+1"
+if (rightsize > 0)
+    free(rightarr);//输出数组并释放空间
+    
+return result;   
+}
