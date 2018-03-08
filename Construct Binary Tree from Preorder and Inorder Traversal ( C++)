@@ -1,0 +1,45 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution 
+{
+public:
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder)
+    {
+                return helper(inorder,0,inorder.size(),preorder,0,preorder.size());
+    }
+private:
+    TreeNode* helper(vector<int>& inorder,int i,int j,vector<int>& preorder,int ii,int jj)
+    {
+        // 每次取preorder的第一个值mid，将其作为树的根节点
+        // 然后从inroder中找到mid，将其分割成为两部分，左边作为mid的左子树，右边作为mid的右子树
+        // tree:     8 4 10 3 6 9 11
+        // Inorder   [3 4 6] 8 [9 10 11]
+        // preorder  8   [3 6 4]   [9 11 10] 
+
+        if(i >= j || ii >= jj)
+            return NULL;
+        
+        int mid = preorder[ii];
+        
+        auto f = find(inorder.begin() + i,inorder.begin() + j,mid);
+        //用法：find(a.begin(),a.end(),10); 在a中的从a.begin()（包括它）到a.end()（不包括它）的
+          //元素中查找10，若存在返回其在向量中的位置
+        
+        int dis = f - inorder.begin() - i;
+        
+        TreeNode* root = new TreeNode(mid);
+        root -> left = helper(inorder,i,i + dis,preorder,ii+1,ii +dis+ 1);
+        root -> right = helper(inorder,i + dis + 1,j,preorder,ii + dis+1,jj);//划分数组来迭代输出二叉树,注意与“中序+后序”对比
+        
+        return root;
+        
+    }
+    
+};
